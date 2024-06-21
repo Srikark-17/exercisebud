@@ -102,7 +102,7 @@ function RegisterScreen({ navigation }) {
             />
           </View>
         </View>
-        <TouchableOpacity activeOpacity={1} onPress={() => handleSubmit()}>
+        <TouchableOpacity activeOpacity={0.8} onPress={() => handleSubmit()}>
           <View style={styles.registerButton}>
             <Text style={styles.registerButtonText}>Register</Text>
           </View>

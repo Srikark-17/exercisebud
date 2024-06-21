@@ -1,20 +1,34 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
 import { WebView } from "react-native-webview";
 import { HP } from "../config/responsive";
 
-const youtubeVideoLinks = [
-  "https://youtube.com/embed/KrY2Kv_BYKo", // Video 1
-  "https://youtube.com/embed/KrY2Kv_BYKo", // Video 2 (replace with another video)
-  "https://youtube.com/embed/KrY2Kv_BYKo", // Video 3 (replace with another video)
-];
+// AIzaSyBqyaSjw1ez30WzJqbCd2yCuAzR_WXTkSw
 
 const WebV = () => {
-  const [selectedVideoLink, setSelectedVideoLink] = useState("");
+  const [selectedVideoLink, setSelectedVideoLink] = useState();
 
   useEffect(() => {
-    const randomIndex = Math.floor(Math.random() * youtubeVideoLinks.length);
-    setSelectedVideoLink(youtubeVideoLinks[randomIndex]);
+    const requestOptions = {
+      method: "GET",
+      redirect: "follow",
+    };
+
+    fetch(
+      "https://www.googleapis.com/youtube/v3/search?key=AIzaSyBqyaSjw1ez30WzJqbCd2yCuAzR_WXTkSw&type=video&q=quick exercise videos&part=snippet&maxResults=30",
+      requestOptions
+    )
+      .then((response) => response.text())
+      .then((result) => {
+        const ytResult = JSON.parse(result);
+        const vidArray = ytResult.items;
+        const randomIndex = Math.floor(Math.random() * vidArray.length);
+        const randomObject = vidArray[randomIndex];
+        setSelectedVideoLink(
+          `https://www.youtube.com/embed/${randomObject.id.videoId}/`
+        );
+      })
+      .catch((error) => console.error(error));
   }, []); // Empty dependency array ensures random selection occurs only once
 
   return (

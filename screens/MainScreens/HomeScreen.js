@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View, StatusBar } from "react-native";
 import React from "react";
 import * as SecureStore from "expo-secure-store";
 import { HP, WP } from "../../config/responsive";
@@ -15,6 +15,7 @@ const HomeScreen = () => {
   ];
 
   const [name, setName] = React.useState("");
+  const [stepStats, setStepStats] = React.useState({});
   const motivation = React.useState(
     motivations[parseInt(Math.round(Math.random() * 5))]
   );
@@ -26,10 +27,44 @@ const HomeScreen = () => {
     };
 
     getSecureStorage();
+    const retrieveData = async () => {
+      const response = await fetch(
+        `https://us-east-2.aws.data.mongodb-api.com/app/data-dvjag/endpoint/data/v1/action/findOne`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "api-key":
+              "bu0vFJtWdhjfvMo6Pc7JcSMUhM7gMTydozsFORUm8TglQhOxOoA4HwqVhvczt5Wd",
+            "Access-Control-Request-Headers": "*",
+          },
+          body: JSON.stringify({
+            dataSource: "Cluster0",
+            database: "xbud",
+            collection: "users",
+            filter: {
+              name: name,
+            },
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        console.log(response);
+        return;
+      }
+      const user = await response.json().then((data) => {
+        return data.document;
+      });
+
+      setStepStats(user.stepStats);
+    };
+    retrieveData();
   }, [name]);
 
   return (
     <ScrollView style={{ backgroundColor: "#fff" }}>
+      <StatusBar barStyle="dark-content" />
       <View style={styles.container}>
         <View style={styles.introContainer}>
           <Text style={styles.title}>Good Afternoon, {name}</Text>
@@ -41,24 +76,22 @@ const HomeScreen = () => {
       </View>
       <WebV />
       <Text style={styles.stepsTitle}>Step Stats</Text>
-
       <View style={styles.stepsContainer}>
         <View style={styles.stepsRow}>
           <Text style={styles.stepsText}>Week</Text>
-          <Text style={styles.stepsText}>3274 steps/day</Text>
+          <Text style={styles.stepsText}>{stepStats?.weekly} steps/day</Text>
         </View>
         <View style={styles.stepsRow}>
           <Text style={styles.stepsText}>Month</Text>
-          <Text style={styles.stepsText}>2938 steps/day</Text>
+          <Text style={styles.stepsText}>{stepStats?.monthly} steps/day</Text>
         </View>
         <View style={styles.stepsRow}>
           <Text style={styles.stepsText}>Year</Text>
-          <Text style={styles.stepsText}>8723 steps/day</Text>
+          <Text style={styles.stepsText}>{stepStats?.yearly} steps/day</Text>
         </View>
       </View>
     </ScrollView>
   );
-  return;
 };
 
 export default HomeScreen;
@@ -66,7 +99,7 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: WP(5),
-    paddingTop: HP(10),
+    paddingTop: HP(15),
   },
   introContainer: {
     height: HP(10),
