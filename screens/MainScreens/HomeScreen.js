@@ -27,6 +27,7 @@ const HomeScreen = () => {
     };
 
     getSecureStorage();
+    // TODO: Adam, add the retrieval function here and the function where you update the step data in mongo
     const retrieveData = async () => {
       const response = await fetch(
         `https://us-east-2.aws.data.mongodb-api.com/app/data-dvjag/endpoint/data/v1/action/findOne`,
