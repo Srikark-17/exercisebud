@@ -139,6 +139,8 @@ const AddFriendScreen = () => {
       document: {
         user_id: currentUser._id,
         friend_id: friend._id,
+        user_name: name,
+        friend_name: friend.name,
       },
     });
 
