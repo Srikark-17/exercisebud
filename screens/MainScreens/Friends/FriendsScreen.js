@@ -1,11 +1,27 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React from "react";
-import { HP, WP } from "../../config/responsive";
+import { HP, WP } from "../../../config/responsive";
+import { AntDesign } from "@expo/vector-icons";
 
-const FriendsScreen = () => {
+const FriendsScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Friends</Text>
+      <View style={styles.topContainer}>
+        <View />
+        <Text style={styles.title}>Friends</Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Add Friend")}
+          activeOpacity={1}
+        >
+          <AntDesign size={24} name="plus" color="#aeaeae" />
+        </TouchableOpacity>
+      </View>
       <ScrollView style={styles.leaderboardContainer}>
         <View style={styles.leaderboardNormal}>
           <Text style={styles.boldText}>Satya</Text>
@@ -43,15 +59,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: WP(5),
     backgroundColor: "#fff",
     height: HP(100),
+    paddingTop: HP(10),
+  },
+  topContainer: {
+    display: "flex",
+    height: HP(10),
+    marginBottom: HP(4),
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   title: {
     fontSize: HP(3.5),
     fontWeight: "800",
-    marginVertical: HP(3),
     alignSelf: "center",
     color: "#000",
-    marginBottom: HP(8),
-    marginTop: HP(13),
+  },
+  plus: {
+    fontSize: HP(1.4),
   },
   leaderboardGold: {
     paddingHorizontal: WP(5),

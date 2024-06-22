@@ -57,8 +57,9 @@ const HomeScreen = () => {
       const user = await response.json().then((data) => {
         return data.document;
       });
-
-      setStepStats(user.stepStats);
+      if (user) {
+        setStepStats(user.stepStats);
+      }
     };
     retrieveData();
   }, [name]);

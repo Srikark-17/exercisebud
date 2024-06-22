@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -14,7 +14,8 @@ import RegisterScreen from "./screens/AuthScreens/RegisterScreen";
 import { HP } from "./config/responsive";
 import { AuthContext } from "./hooks/AuthContext";
 import LeaderboardScreen from "./screens/MainScreens/LeaderboardScreen";
-import FriendsScreen from "./screens/MainScreens/FriendsScreen";
+import FriendsScreen from "./screens/MainScreens/Friends/FriendsScreen";
+import AddFriendsScreen from "./screens/MainScreens/Friends/AddFriendScreen";
 
 // let firebaseConfig = Firebasekeys;
 // if (!firebase.apps.length) {
@@ -26,6 +27,7 @@ const themecolor = "#2B2D2F";
 const tabcolor = "#4169E1";
 const Tab = createBottomTabNavigator();
 const Auth = createNativeStackNavigator();
+const Friend = createNativeStackNavigator();
 const Stack = createNativeStackNavigator();
 
 function MainTabs() {
@@ -71,7 +73,7 @@ function MainTabs() {
       />
       <Tab.Screen
         name="Friends"
-        component={FriendsScreen}
+        component={FriendNavigator}
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
@@ -100,6 +102,29 @@ function MainTabs() {
     </Tab.Navigator>
   );
 }
+
+function FriendNavigator() {
+  return (
+    <Friend.Navigator
+      initialRouteName="FriendsScreen"
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Friend.Screen
+        name="FriendsScreen"
+        component={FriendsScreen}
+        options={{}}
+      />
+      <Friend.Screen
+        name="Add Friend"
+        component={AddFriendsScreen}
+        options={{}}
+      />
+    </Friend.Navigator>
+  );
+}
+
 function AuthNavigator() {
   return (
     <Auth.Navigator
