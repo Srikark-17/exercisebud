@@ -75,9 +75,6 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     color: "#000",
   },
-  plus: {
-    fontSize: HP(1.4),
-  },
   leaderboardGold: {
     paddingHorizontal: WP(5),
     paddingVertical: HP(3),
