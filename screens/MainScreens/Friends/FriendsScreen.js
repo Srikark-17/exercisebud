@@ -5,11 +5,80 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { HP, WP } from "../../../config/responsive";
 import { AntDesign } from "@expo/vector-icons";
+import moment from "moment";
+import * as SecureStore from "expo-secure-store";
 
 const FriendsScreen = ({ navigation }) => {
+  const [friendsData, setFriendsData] = useState([]);
+  const [name, setName] = useState("");
+
+  useEffect(() => {
+    const fetchUserIdAndFriends = async () => {
+      try {
+        const storedName = await SecureStore.getItemAsync("name");
+        setName(storedUserId);
+
+        if (storedName) {
+          await fetchFriendsData(storedName);
+        }
+      } catch (error) {
+        console.error("Error fetching user ID:", error);
+      }
+    };
+
+    fetchUserIdAndFriends();
+  }, []);
+
+  const fetchFriendsData = async (name) => {
+    try {
+      const response = await fetch(
+        "https://us-east-2.aws.data.mongodb-api.com/app/data-dvjag/endpoint/data/v1/action/findOne",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "api-key":
+              "bu0vFJtWdhjfvMo6Pc7JcSMUhM7gMTydozsFORUm8TglQhOxOoA4HwqVhvczt5Wd",
+            "Access-Control-Request-Headers": "*",
+          },
+          body: JSON.stringify({
+            dataSource: "Cluster0",
+            database: "xbud",
+            collection: "users",
+            filter: { name: name },
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (result.document && result.document.friends) {
+        setFriendsData(result.document.friends);
+      }
+    } catch (error) {
+      console.error("Error fetching friends data:", error);
+    }
+  };
+
+  const getRelativeTime = (lastActiveTime) => {
+    const now = moment();
+    const then = moment(lastActiveTime);
+    const diff = moment.duration(now.diff(then));
+
+    if (diff.asMinutes() < 1) {
+      return "Just Now";
+    } else if (diff.asHours() < 1) {
+      return `${Math.floor(diff.asMinutes())} Minutes Ago`;
+    } else if (diff.asDays() < 1) {
+      return `${Math.floor(diff.asHours())} Hours Ago`;
+    } else {
+      return then.format("MMM Do");
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
@@ -23,30 +92,16 @@ const FriendsScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
       <ScrollView style={styles.leaderboardContainer}>
-        <View style={styles.leaderboardNormal}>
-          <Text style={styles.boldText}>Satya</Text>
-          <Text style={styles.minuteText}>Last Seen 17 Minutes Ago</Text>
-        </View>
-        <View style={styles.leaderboardNormal}>
-          <Text style={styles.boldText}>Vihaan</Text>
-          <Text style={styles.minuteText}>Last Seen 43 Minutes Ago</Text>
-        </View>
-        <View style={styles.leaderboardNormal}>
-          <Text style={styles.boldText}>Vedant</Text>
-          <Text style={styles.minuteText}>Last Seen 1 Hour Ago</Text>
-        </View>
-        <View style={styles.leaderboardNormal}>
-          <Text style={styles.boldText}>Rohan</Text>
-          <Text style={styles.minuteText}>Last Seen 2 Hours Ago</Text>
-        </View>
-        <View style={styles.leaderboardNormal}>
-          <Text style={styles.boldText}>Sashank</Text>
-          <Text style={styles.minuteText}>Last Seen 4 Hours Ago</Text>
-        </View>
-        <View style={styles.leaderboardNormal}>
-          <Text style={styles.boldText}>Preetham</Text>
-          <Text style={styles.minuteText}>Last Seen 6 Hours Ago</Text>
-        </View>
+        {friendsData.map((friend) => (
+          <View key={friend.id} style={styles.leaderboardNormal}>
+            <Text style={styles.boldText}>{friend.name}</Text>
+            {friend.lastActive && (
+              <Text style={styles.minuteText}>
+                Last seen {getRelativeTime(friend.lastActive)}
+              </Text>
+            )}
+          </View>
+        ))}
       </ScrollView>
     </View>
   );

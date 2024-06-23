@@ -49,7 +49,7 @@ const LeaderboardScreen = () => {
         if (result.documents && result.documents.length > 0) {
           const userDoc = result.documents[0];
           const userData = {
-            name: userDoc.name,
+            name: "You",
             steps: userDoc.stepStats.yearly,
           };
 

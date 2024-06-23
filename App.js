@@ -16,6 +16,7 @@ import { AuthContext } from "./hooks/AuthContext";
 import LeaderboardScreen from "./screens/MainScreens/LeaderboardScreen";
 import FriendsScreen from "./screens/MainScreens/Friends/FriendsScreen";
 import AddFriendsScreen from "./screens/MainScreens/Friends/AddFriendScreen";
+import { AppState } from "react-native";
 
 // let firebaseConfig = Firebasekeys;
 // if (!firebase.apps.length) {
@@ -141,6 +142,11 @@ function AuthNavigator() {
 }
 
 export default function App2() {
+  const appState = React.useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = React.useState(
+    appState.current
+  );
+
   const [state, dispatch] = React.useReducer(
     (prevState, action) => {
       switch (action.type) {
@@ -221,6 +227,67 @@ export default function App2() {
     }),
     []
   );
+
+  React.useEffect(() => {
+    AppState.addEventListener("change", _handleAppStateChange);
+
+    return () => {
+      AppState.removeEventListener("change", _handleAppStateChange);
+    };
+  }, []);
+
+  const _handleAppStateChange = (nextAppState) => {
+    if (nextAppState != "active") {
+      // TODO SET USERS ONLINE STATUS TO TRUE
+      const now = new Date();
+      let name;
+
+      const getSecureStorage = async () => {
+        name = await SecureStore.getItemAsync("name");
+      };
+
+      getSecureStorage();
+
+      const apiKey =
+        "bu0vFJtWdhjfvMo6Pc7JcSMUhM7gMTydozsFORUm8TglQhOxOoA4HwqVhvczt5Wd";
+      const apiUrl =
+        "https://us-east-2.aws.data.mongodb-api.com/app/data-dvjag/endpoint/data/v1/action/";
+
+      const updateStatus = async () => {
+        try {
+          await fetch(`${apiUrl}updateOne`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "api-key": apiKey,
+              "Access-Control-Request-Headers": "*",
+            },
+            body: JSON.stringify({
+              dataSource: "Cluster0",
+              database: "xbud",
+              collection: "users",
+              filter: { name: name },
+              update: {
+                $set: {
+                  lastActive: now.toISOString(),
+                },
+              },
+              upsert: true,
+            }),
+          });
+        } catch (error) {
+          console.error(`Error updating user status:`, error);
+        }
+      };
+      updateStatus();
+    } else {
+      // TODO SET USERS ONLINE STATUS TO FALSE
+    }
+
+    appState.current = nextAppState;
+    setAppStateVisible(appState.current);
+    console.log("AppState", appState.current);
+  };
 
   return (
     <NavigationContainer>
