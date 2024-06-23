@@ -2,7 +2,11 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import {
+  MaterialCommunityIcons,
+  MaterialIcons,
+  FontAwesome6,
+} from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 import HomeScreen from "./screens/MainScreens/HomeScreen";
 import SplashScreen from "./screens/AuthScreens/SplashScreen";
@@ -14,9 +18,10 @@ import RegisterScreen from "./screens/AuthScreens/RegisterScreen";
 import { HP } from "./config/responsive";
 import { AuthContext } from "./hooks/AuthContext";
 import LeaderboardScreen from "./screens/MainScreens/LeaderboardScreen";
-import FriendsScreen from "./screens/MainScreens/Friends/FriendsScreen";
 import AddFriendsScreen from "./screens/MainScreens/Friends/AddFriendScreen";
 import { AppState } from "react-native";
+import PersonalizedList from "./screens/MainScreens/Fitness/PersonalizedList";
+import Meditation from "./screens/MainScreens/Fitness/Meditation";
 
 // let firebaseConfig = Firebasekeys;
 // if (!firebase.apps.length) {
@@ -28,7 +33,8 @@ const themecolor = "#2B2D2F";
 const tabcolor = "#4169E1";
 const Tab = createBottomTabNavigator();
 const Auth = createNativeStackNavigator();
-const Friend = createNativeStackNavigator();
+const Leaderboard = createNativeStackNavigator();
+const Fitness = createNativeStackNavigator();
 const Stack = createNativeStackNavigator();
 
 function MainTabs() {
@@ -60,7 +66,7 @@ function MainTabs() {
       />
       <Tab.Screen
         name="Leaderboard"
-        component={LeaderboardScreen}
+        component={LeaderboardNavigator}
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
@@ -73,13 +79,13 @@ function MainTabs() {
         }}
       />
       <Tab.Screen
-        name="Friends"
-        component={FriendNavigator}
+        name="Fitness"
+        component={FitnessNavigator}
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <MaterialIcons
-              name="groups"
+            <FontAwesome6
+              name="dumbbell"
               size={26}
               color={focused ? tabcolor : inactiveColor}
             />
@@ -104,25 +110,43 @@ function MainTabs() {
   );
 }
 
-function FriendNavigator() {
+function LeaderboardNavigator() {
   return (
-    <Friend.Navigator
-      initialRouteName="FriendsScreen"
+    <Leaderboard.Navigator
+      initialRouteName="LeaderboardScreen"
       screenOptions={{
         headerShown: false,
       }}
     >
-      <Friend.Screen
-        name="FriendsScreen"
-        component={FriendsScreen}
+      <Leaderboard.Screen
+        name="LeaderboardScreen"
+        component={LeaderboardScreen}
         options={{}}
       />
-      <Friend.Screen
+      <Leaderboard.Screen
         name="Add Friend"
         component={AddFriendsScreen}
         options={{}}
       />
-    </Friend.Navigator>
+    </Leaderboard.Navigator>
+  );
+}
+
+function FitnessNavigator() {
+  return (
+    <Fitness.Navigator
+      initialRouteName="PersonalizedList"
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Fitness.Screen
+        name="PersonalizedList"
+        component={PersonalizedList}
+        options={{}}
+      />
+      <Fitness.Screen name="Meditation" component={Meditation} options={{}} />
+    </Fitness.Navigator>
   );
 }
 
@@ -229,10 +253,13 @@ export default function App2() {
   );
 
   React.useEffect(() => {
-    AppState.addEventListener("change", _handleAppStateChange);
+    const subscription = AppState.addEventListener(
+      "change",
+      _handleAppStateChange
+    );
 
     return () => {
-      AppState.removeEventListener("change", _handleAppStateChange);
+      subscription.remove();
     };
   }, []);
 
@@ -280,8 +307,6 @@ export default function App2() {
         }
       };
       updateStatus();
-    } else {
-      // TODO SET USERS ONLINE STATUS TO FALSE
     }
 
     appState.current = nextAppState;
