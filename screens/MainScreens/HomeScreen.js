@@ -235,6 +235,9 @@ const HomeScreen = () => {
         <View style={styles.introContainer}>
           <View style={styles.introTopContainer}>
             <Text style={styles.title}>Good Afternoon, {name}</Text>
+            {notifications.length != 0 && (
+              <View style={styles.newNotifications} />
+            )}
             <TouchableOpacity
               activeOpacity={1}
               onPress={() => setShowNotification(!showNotification)}
@@ -349,6 +352,16 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     width: WP(80),
     color: "#000",
+  },
+  newNotifications: {
+    width: WP(2),
+    backgroundColor: "#ff0000",
+    position: "absolute",
+    left: WP(80.4),
+    zIndex: 100000,
+    bottom: HP(5),
+    height: HP(1),
+    borderRadius: 10,
   },
   motivation: {
     color: "#AEAEAE",
