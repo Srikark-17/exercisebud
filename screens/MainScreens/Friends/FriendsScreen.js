@@ -19,7 +19,7 @@ const FriendsScreen = ({ navigation }) => {
     const fetchUserIdAndFriends = async () => {
       try {
         const storedName = await SecureStore.getItemAsync("name");
-        setName(storedUserId);
+        setName(storedName);
 
         if (storedName) {
           await fetchFriendsData(storedName);
@@ -102,6 +102,12 @@ const FriendsScreen = ({ navigation }) => {
             )}
           </View>
         ))}
+        {friendsData.length == 0 && (
+          <Text style={styles.noFriendsText}>
+            You have not added any of your friends. Press the plus icon above to
+            add your friends!
+          </Text>
+        )}
       </ScrollView>
     </View>
   );
@@ -186,5 +192,9 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: "#ffffff",
     width: WP(30),
+  },
+  noFriendsText: {
+    fontWeight: "600",
+    textAlign: "center",
   },
 });
