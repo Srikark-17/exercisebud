@@ -265,7 +265,6 @@ export default function App2() {
 
   const _handleAppStateChange = (nextAppState) => {
     if (nextAppState != "active") {
-      // TODO SET USERS ONLINE STATUS TO TRUE
       const now = new Date();
       let name;
 
