@@ -163,7 +163,7 @@ const AddFriendScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Add your friend</Text>
+      <Text style={styles.title}>Add Your Friend</Text>
       <Text style={styles.description}>
         Select your friend below or search to find their name.
       </Text>
@@ -172,14 +172,21 @@ const AddFriendScreen = () => {
         <TextInput placeholder="Search" />
       </View>
       <View style={styles.availableFriendsContainer}>
-        <View style={styles.availableFriend}>
-          <Text style={styles.availableFriendName}>Friend Name</Text>
-          <TouchableOpacity activeOpacity={1} onPress={() => addFriend()}>
-            <View style={styles.addFriendButton}>
-              <Text style={styles.addFriendText}>Add Friend</Text>
+        {friends.map((friend) => {
+          return (
+            <View key={friend._id} style={styles.availableFriend}>
+              <Text style={styles.availableFriendName}>{friend.name}</Text>
+              <TouchableOpacity
+                activeOpacity={1}
+                onPress={() => addFriend(friend)}
+              >
+                <View style={styles.addFriendButton}>
+                  <Text style={styles.addFriendText}>Add Friend</Text>
+                </View>
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
-        </View>
+          );
+        })}
       </View>
     </View>
   );

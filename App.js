@@ -265,6 +265,7 @@ export default function App2() {
 
   const _handleAppStateChange = (nextAppState) => {
     if (nextAppState != "active") {
+      console.log("hi");
       const now = new Date();
       let name;
 
