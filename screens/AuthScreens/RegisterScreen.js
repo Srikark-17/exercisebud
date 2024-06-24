@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StatusBar,
   Text,
-  Alert,
 } from "react-native";
 
 import { SvgXml } from "react-native-svg";

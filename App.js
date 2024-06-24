@@ -11,10 +11,9 @@ import * as SecureStore from "expo-secure-store";
 import HomeScreen from "./screens/MainScreens/HomeScreen";
 import SplashScreen from "./screens/AuthScreens/SplashScreen";
 import LoginScreen from "./screens/AuthScreens/LoginScreen";
-import AccountScreen from "./screens/MainScreens/AccountScreen";
+import AccountScreen from "./screens/MainScreens/Settings/AccountScreen";
 import RegisterScreen from "./screens/AuthScreens/RegisterScreen";
 
-// import "firebase/firestore";
 import { HP } from "./config/responsive";
 import { AuthContext } from "./hooks/AuthContext";
 import LeaderboardScreen from "./screens/MainScreens/LeaderboardScreen";
@@ -22,11 +21,7 @@ import AddFriendsScreen from "./screens/MainScreens/Friends/AddFriendScreen";
 import { AppState } from "react-native";
 import PersonalizedList from "./screens/MainScreens/Fitness/PersonalizedList";
 import Meditation from "./screens/MainScreens/Fitness/Meditation";
-
-// let firebaseConfig = Firebasekeys;
-// if (!firebase.apps.length) {
-//   firebase.initializeApp(firebaseConfig);
-// }
+import ResetPasswordScreen from "./screens/MainScreens/Settings/ResetPasswordScreen";
 
 const inactiveColor = "#8E8E8E";
 const themecolor = "#2B2D2F";
@@ -35,6 +30,7 @@ const Tab = createBottomTabNavigator();
 const Auth = createNativeStackNavigator();
 const Leaderboard = createNativeStackNavigator();
 const Fitness = createNativeStackNavigator();
+const Settings = createNativeStackNavigator();
 const Stack = createNativeStackNavigator();
 
 function MainTabs() {
@@ -94,7 +90,7 @@ function MainTabs() {
       />
       <Tab.Screen
         name="Account"
-        component={AccountScreen}
+        component={SettingsNavigator}
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
@@ -147,6 +143,28 @@ function FitnessNavigator() {
       />
       <Fitness.Screen name="Meditation" component={Meditation} options={{}} />
     </Fitness.Navigator>
+  );
+}
+
+function SettingsNavigator() {
+  return (
+    <Settings.Navigator
+      initialRouteName="Account Screen"
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Settings.Screen
+        name="Account Screen"
+        component={AccountScreen}
+        options={{}}
+      />
+      <Settings.Screen
+        name="Reset Password"
+        component={ResetPasswordScreen}
+        options={{}}
+      />
+    </Settings.Navigator>
   );
 }
 
@@ -265,7 +283,6 @@ export default function App2() {
 
   const _handleAppStateChange = (nextAppState) => {
     if (nextAppState != "active") {
-      console.log("hi");
       const now = new Date();
       let name;
 

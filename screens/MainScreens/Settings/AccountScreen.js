@@ -1,14 +1,20 @@
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
-import { AuthContext } from "../../hooks/AuthContext";
+import { AuthContext } from "../../../hooks/AuthContext";
 import * as SecureStore from "expo-secure-store";
-import { HP, WP } from "../../config/responsive";
+import { HP, WP } from "../../../config/responsive";
+import {
+  MaterialCommunityIcons,
+  MaterialIcons,
+  FontAwesome6,
+} from "@expo/vector-icons";
 
 const AccountScreen = ({ navigation }) => {
   const { signOut } = React.useContext(AuthContext);
   const [name, setName] = React.useState();
   const [uid, setUID] = React.useState();
   const [user, setUser] = React.useState();
+  // TODO: reset password
 
   React.useEffect(() => {
     const getSecureStorage = async () => {
@@ -56,27 +62,39 @@ const AccountScreen = ({ navigation }) => {
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.uuid}>UUID: {user?._id}</Text>
       </View>
-      <View style={styles.accountOption}>
-        <Text
-          onPress={() => navigation.navigate("Leaderboard")}
-          style={styles.accountOptionText}
-        >
-          Leaderboard
-        </Text>
-      </View>
-      <View style={styles.accountOption}>
-        <Text
-          style={styles.accountOptionText}
-          onPress={() => navigation.navigate("Friends")}
-        >
-          Friends
-        </Text>
-      </View>
-      <View style={styles.accountOption}>
-        <Text onPress={() => signOut()} style={styles.accountOptionText}>
-          Log Out
-        </Text>
-      </View>
+      <TouchableOpacity
+        activeOpacity={1}
+        onPress={() => navigation.navigate("Leaderboard")}
+      >
+        <View style={styles.accountOption}>
+          <MaterialIcons name="leaderboard" size={26} color="#aeaeae" />
+          <Text style={styles.accountOptionText}>Leaderboard</Text>
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity
+        activeOpacity={1}
+        onPress={() => navigation.navigate("Fitness")}
+      >
+        <View style={styles.accountOption}>
+          <FontAwesome6 name="dumbbell" size={26} color="#aeaeae" />
+          <Text style={styles.accountOptionText}>Personalized Fitness</Text>
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity
+        activeOpacity={1}
+        onPress={() => navigation.navigate("Reset Password")}
+      >
+        <View style={styles.accountOption}>
+          <MaterialCommunityIcons name="lock-reset" size={26} color="#aeaeae" />
+          <Text style={styles.accountOptionText}>Reset Password</Text>
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => signOut()} activeOpacity={1}>
+        <View style={styles.accountOption}>
+          <FontAwesome6 name="power-off" size={26} color="#d14249" />
+          <Text style={styles.signOutText}>Log Out</Text>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -114,8 +132,11 @@ const styles = StyleSheet.create({
   accountOption: {
     width: WP(90),
     alignSelf: "center",
+    alignItems: "center",
+    gap: 20,
     marginTop: HP(5),
     paddingRight: WP(10),
+    flexDirection: "row",
     paddingLeft: WP(5),
     paddingBottom: HP(1),
     borderBottomWidth: 1,
@@ -124,6 +145,11 @@ const styles = StyleSheet.create({
   accountOptionText: {
     fontSize: HP(2),
     color: "#aeaeae",
+    fontWeight: "800",
+  },
+  signOutText: {
+    fontSize: HP(2),
+    color: "#d14249",
     fontWeight: "800",
   },
 });
