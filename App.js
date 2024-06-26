@@ -1,5 +1,9 @@
 import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  getFocusedRouteNameFromRoute,
+  useNavigationState,
+} from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
@@ -34,14 +38,20 @@ const Settings = createNativeStackNavigator();
 const Stack = createNativeStackNavigator();
 
 function MainTabs() {
+  const getTabBarVisibility = (route) => {
+    const routeName = getFocusedRouteNameFromRoute(route) ?? "PersonalizedList";
+    if (routeName === "Meditation") {
+      return { display: "none" };
+    }
+    return { display: "flex" };
+  };
+
   return (
     <Tab.Navigator
       initialRouteName="Dashboard"
-      sceneAnimationEnabled="true"
       activeColor={tabcolor}
       inactiveColor={inactiveColor}
       barStyle={{ backgroundColor: `${themecolor}`, height: HP(15) }}
-      shifting={true}
       screenOptions={{
         tabBarShowLabel: false,
       }}
@@ -77,7 +87,7 @@ function MainTabs() {
       <Tab.Screen
         name="Fitness"
         component={FitnessNavigator}
-        options={{
+        options={({ route }) => ({
           headerShown: false,
           tabBarIcon: ({ focused }) => (
             <FontAwesome6
@@ -86,7 +96,8 @@ function MainTabs() {
               color={focused ? tabcolor : inactiveColor}
             />
           ),
-        }}
+          tabBarStyle: getTabBarVisibility(route),
+        })}
       />
       <Tab.Screen
         name="Account"
@@ -128,7 +139,16 @@ function LeaderboardNavigator() {
   );
 }
 
-function FitnessNavigator() {
+function FitnessNavigator({ navigation }) {
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener("state", (e) => {
+      const currentRouteName =
+        getFocusedRouteNameFromRoute(e.data.state) ?? "PersonalizedList";
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
   return (
     <Fitness.Navigator
       initialRouteName="PersonalizedList"
@@ -136,12 +156,8 @@ function FitnessNavigator() {
         headerShown: false,
       }}
     >
-      <Fitness.Screen
-        name="PersonalizedList"
-        component={PersonalizedList}
-        options={{}}
-      />
-      <Fitness.Screen name="Meditation" component={Meditation} options={{}} />
+      <Fitness.Screen name="PersonalizedList" component={PersonalizedList} />
+      <Fitness.Screen name="Meditation" component={Meditation} />
     </Fitness.Navigator>
   );
 }
