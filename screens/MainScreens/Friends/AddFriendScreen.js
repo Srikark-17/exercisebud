@@ -14,6 +14,7 @@ const AddFriendScreen = () => {
   const [name, setName] = useState();
   const [friends, setFriends] = useState([]);
   const [currentUser, setCurrentUser] = useState();
+  const [searchValue, setSearchValue] = useState();
 
   useEffect(() => {
     const getSecureStorage = async () => {
@@ -161,6 +162,13 @@ const AddFriendScreen = () => {
     }
   };
 
+  const getFilteredFriends = () => {
+    if (!searchValue) return friends;
+    return friends.filter((friend) =>
+      friend.name.toLowerCase().includes(searchValue.toLowerCase())
+    );
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Add Your Friend</Text>
@@ -169,24 +177,33 @@ const AddFriendScreen = () => {
       </Text>
       <View style={styles.searchBar}>
         <Feather name="search" color="#aeaeae" size={24} />
-        <TextInput placeholder="Search" />
+        <TextInput
+          placeholder="Search..."
+          style={styles.textInput}
+          value={searchValue}
+          onChangeText={setSearchValue}
+        />
       </View>
       <View style={styles.availableFriendsContainer}>
-        {friends.map((friend) => {
-          return (
-            <View key={friend._id} style={styles.availableFriend}>
-              <Text style={styles.availableFriendName}>{friend.name}</Text>
-              <TouchableOpacity
-                activeOpacity={1}
-                onPress={() => addFriend(friend)}
-              >
-                <View style={styles.addFriendButton}>
-                  <Text style={styles.addFriendText}>Add Friend</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          );
-        })}
+        {getFilteredFriends().length > 0 ? (
+          getFilteredFriends().map((friend) => {
+            return (
+              <View key={friend._id} style={styles.availableFriend}>
+                <Text style={styles.availableFriendName}>{friend.name}</Text>
+                <TouchableOpacity
+                  activeOpacity={1}
+                  onPress={() => addFriend(friend)}
+                >
+                  <View style={styles.addFriendButton}>
+                    <Text style={styles.addFriendText}>Add Friend</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            );
+          })
+        ) : (
+          <Text style={styles.noFriendsText}>No friends found</Text>
+        )}
       </View>
     </View>
   );
@@ -229,9 +246,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: WP(3),
     paddingVertical: HP(1),
   },
+  textInput: {
+    width: WP(60),
+    backgroundColor: "#f3f3f3",
+    paddingVertical: HP(1),
+  },
   availableFriendsContainer: {
     marginTop: HP(3),
     alignItems: "center",
+    gap: 20,
     width: "100%",
     justifyContent: "center",
   },
@@ -265,5 +288,11 @@ const styles = StyleSheet.create({
   addFriendText: {
     fontWeight: "600",
     color: "#ffffff",
+  },
+  noFriendsText: {
+    fontSize: HP(2),
+    color: "#666",
+    textAlign: "center",
+    marginTop: HP(3),
   },
 });
