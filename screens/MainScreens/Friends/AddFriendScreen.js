@@ -1,4 +1,5 @@
 import {
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -10,7 +11,7 @@ import { HP, WP } from "../../../config/responsive";
 import { Feather } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 
-const AddFriendScreen = () => {
+const AddFriendScreen = ({ navigation }) => {
   const [name, setName] = useState();
   const [friends, setFriends] = useState([]);
   const [currentUser, setCurrentUser] = useState();
@@ -157,6 +158,7 @@ const AddFriendScreen = () => {
         "https://us-east-2.aws.data.mongodb-api.com/app/data-dvjag/endpoint/data/v1/action/insertOne",
         requestOptions
       );
+      navigation.goBack();
     } catch (error) {
       console.error(error);
     }
@@ -184,27 +186,29 @@ const AddFriendScreen = () => {
           onChangeText={setSearchValue}
         />
       </View>
-      <View style={styles.availableFriendsContainer}>
-        {getFilteredFriends().length > 0 ? (
-          getFilteredFriends().map((friend) => {
-            return (
-              <View key={friend._id} style={styles.availableFriend}>
-                <Text style={styles.availableFriendName}>{friend.name}</Text>
-                <TouchableOpacity
-                  activeOpacity={1}
-                  onPress={() => addFriend(friend)}
-                >
-                  <View style={styles.addFriendButton}>
-                    <Text style={styles.addFriendText}>Add Friend</Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-            );
-          })
-        ) : (
-          <Text style={styles.noFriendsText}>No friends found</Text>
-        )}
-      </View>
+      <ScrollView>
+        <View style={styles.availableFriendsContainer}>
+          {getFilteredFriends().length > 0 ? (
+            getFilteredFriends().map((friend) => {
+              return (
+                <View key={friend._id} style={styles.availableFriend}>
+                  <Text style={styles.availableFriendName}>{friend.name}</Text>
+                  <TouchableOpacity
+                    activeOpacity={1}
+                    onPress={() => addFriend(friend)}
+                  >
+                    <View style={styles.addFriendButton}>
+                      <Text style={styles.addFriendText}>Add Friend</Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              );
+            })
+          ) : (
+            <Text style={styles.noFriendsText}>No friends found</Text>
+          )}
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -257,6 +261,7 @@ const styles = StyleSheet.create({
     gap: 20,
     width: "100%",
     justifyContent: "center",
+    marginBottom: HP(10),
   },
   availableFriend: {
     paddingVertical: HP(2),

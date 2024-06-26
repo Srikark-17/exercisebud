@@ -197,9 +197,9 @@ const HomeScreen = () => {
       {showNotification && notifications.length != 0 ? (
         <View style={styles.notificationsContainer}>
           {notifications.map((notification) => (
-            <View style={styles.notification}>
+            <View key={notification} style={styles.notification}>
               <Text style={styles.notificationText}>
-                Friend Request from {notification.friend_name}
+                Friend Request from {notification.user_name}
               </Text>
               <View style={styles.buttonContainer}>
                 <TouchableOpacity

@@ -68,7 +68,7 @@ function RegisterScreen({ navigation }) {
         <View>
           <View style={styles.textInput}>
             <TextInput
-              placeholder="Full Name"
+              placeholder="Username"
               autoCapitalize="none"
               autoCorrect={false}
               placeholderTextColor="#aeaeae"
