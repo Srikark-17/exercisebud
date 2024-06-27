@@ -149,8 +149,6 @@ const LeaderboardScreen = ({ navigation }) => {
     }
   };
 
-  console.log(leaderboard);
-
   return (
     <View style={styles.container}>
       <View style={styles.toggleContainer}>
