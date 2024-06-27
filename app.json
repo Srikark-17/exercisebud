@@ -1,5 +1,31 @@
 {
   "expo": {
+    
+    "plugins": [
+			"react-native-health",
+      "./androidManifestPlugin.js",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 33,
+            "targetSdkVersion": 33,
+            "buildToolsVersion": "33.0.0",
+            "minSdkVersion": 26
+        }
+      }
+    ]
+  ]
+  ,
+    
+
+  "android": {
+    "permissions": [
+      "android.permission.health.READ_STEPS",
+      "android.permission.health.READ_FLOORS_CLIMBED",
+      "android.permission.health.READ_DISTANCE"
+    ]
+  },
     "name": "exercisebud",
     "slug": "exercisebud",
     "version": "1.0.0",
@@ -11,6 +37,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    
     "assetBundlePatterns": [
       "**/*"
     ],
