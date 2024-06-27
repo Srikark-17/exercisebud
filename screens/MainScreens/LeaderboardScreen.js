@@ -39,7 +39,7 @@ const LeaderboardScreen = ({ navigation }) => {
       const raw = JSON.stringify({
         dataSource: "Cluster0",
         database: "xbud",
-        collection: "requests",
+        collection: "users",
         filter: { name: name },
       });
 
@@ -61,7 +61,7 @@ const LeaderboardScreen = ({ navigation }) => {
           const userDoc = result.documents[0];
           const userData = {
             name: "You",
-            steps: userDoc.stepStats.yearly,
+            steps: userDoc.stepStats?.yearly || 0,
           };
 
           let leaderboardData = [userData];
@@ -149,6 +149,8 @@ const LeaderboardScreen = ({ navigation }) => {
     }
   };
 
+  console.log(leaderboard);
+
   return (
     <View style={styles.container}>
       <View style={styles.toggleContainer}>
@@ -181,7 +183,7 @@ const LeaderboardScreen = ({ navigation }) => {
         <>
           <Text style={styles.title}>Leaderboard</Text>
           <ScrollView style={styles.leaderboardContainer}>
-            {leaderboard.length > 1 ? (
+            {leaderboard.length >= 1 ? (
               leaderboard.map((item, index) => (
                 <View key={index} style={getLeaderboardItemStyle(index)}>
                   <Text style={styles.boldText}>{item.name}</Text>

@@ -19,7 +19,7 @@ const PersonalizedList = ({ navigation }) => {
   const [exerciseIntensity, setExerciseIntensity] = React.useState();
   const [purpose, setPurpose] = React.useState("");
   const [accessToEquipment, setAccessToEquipment] = React.useState("");
-  const [step, setStep] = React.useState(1);
+  const [step, setStep] = React.useState(0);
   const [name, setName] = React.useState("");
   const [currentUser, setCurrentUser] = React.useState(null);
   const [recommendation, setRecommendation] = React.useState(null);
@@ -86,9 +86,7 @@ const PersonalizedList = ({ navigation }) => {
 
     if (step === 1) {
       const prevLogs = currentUser?.entries;
-      if (currentUser.recommendations) {
-      } else {
-      }
+
       const generateRecommendations = async () => {
         const sortArrayByDate = (array) => {
           return array.sort((a, b) => {
@@ -98,13 +96,13 @@ const PersonalizedList = ({ navigation }) => {
           });
         };
 
-        const newEntries = sortArrayByDate(prevLogs);
+        let newEntries;
+        if (prevLogs) {
+          newEntries = sortArrayByDate(prevLogs);
+        }
 
         const myHeaders = new Headers();
-        myHeaders.append(
-          "Authorization",
-          "Bearer sk-proj-f0yDjqu9WLjTF9wPs0FJT3BlbkFJrrVJ6Jw6UGxr7cBCsUFn"
-        );
+        myHeaders.append("Authorization", `Bearer ${API_KEY}`);
         myHeaders.append("Access-Control-Request-Headers", "*");
         myHeaders.append("Content-Type", "application/json");
 
@@ -138,10 +136,10 @@ const PersonalizedList = ({ navigation }) => {
       generateRecommendations();
 
       const now = new Date();
-      const setRecommendation = async () => {
+      const updateRecommendation = async () => {
         try {
           await fetch(
-            `https://us-east-2.aws.data.mongodb-api.com/app/data-dvjag/endpoint/data/v1/action/updateOneupdateOne`,
+            `https://us-east-2.aws.data.mongodb-api.com/app/data-dvjag/endpoint/data/v1/action/updateOne`,
             {
               method: "POST",
               headers: {
@@ -171,6 +169,7 @@ const PersonalizedList = ({ navigation }) => {
           console.error("Error setting recommendation:", error);
         }
       };
+      updateRecommendation();
     }
   }, []);
 

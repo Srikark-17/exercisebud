@@ -7,7 +7,6 @@ const DropdownComponent = ({ data, onValueChange }) => {
   const [value, setValue] = useState(null);
 
   useEffect(() => {
-    // Call the callback function when the value changes
     onValueChange && onValueChange(value);
   }, [value, onValueChange]);
 

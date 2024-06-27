@@ -3,8 +3,6 @@ import { StyleSheet } from "react-native";
 import { WebView } from "react-native-webview";
 import { HP } from "../config/responsive";
 
-// AIzaSyBqyaSjw1ez30WzJqbCd2yCuAzR_WXTkSw
-
 const WebV = () => {
   const [selectedVideoLink, setSelectedVideoLink] = useState();
 

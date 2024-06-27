@@ -78,7 +78,6 @@ const HomeScreen = () => {
 
     retrieveNotifications();
 
-    // TODO: Adam, add the retrieval function here and the function where you update the step data in mongo
     const retrieveData = async () => {
       const response = await fetch(
         `https://us-east-2.aws.data.mongodb-api.com/app/data-dvjag/endpoint/data/v1/action/findOne`,
@@ -121,12 +120,10 @@ const HomeScreen = () => {
     const apiUrl =
       "https://us-east-2.aws.data.mongodb-api.com/app/data-dvjag/endpoint/data/v1/action/";
 
-    // Step 1: Remove notification from notifications state
     setNotifications((prevNotifications) =>
       prevNotifications.filter((n) => n._id !== notification._id)
     );
 
-    // Step 2: Delete document from requests collection
     try {
       await fetch(`${apiUrl}deleteOne`, {
         method: "POST",
@@ -139,7 +136,19 @@ const HomeScreen = () => {
           dataSource: "Cluster0",
           database: "xbud",
           collection: "requests",
-          filter: { _id: { $oid: notification._id } },
+          filter: {
+            $or: [
+              { _id: { $oid: notification._id } },
+              {
+                friend_name: notification.friend_name,
+                user_name: notification.user_name,
+              },
+              {
+                user_name: notification.friend_name,
+                friend_name: notification.user_name,
+              },
+            ],
+          },
         }),
       });
     } catch (error) {
@@ -147,7 +156,6 @@ const HomeScreen = () => {
     }
 
     if (type === "accept") {
-      // Step 3: Add to friends key in each user document
       const updateFriends = async (userId, friendId, friendName) => {
         try {
           await fetch(`${apiUrl}updateOne`, {

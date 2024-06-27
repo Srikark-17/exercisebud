@@ -14,7 +14,6 @@ const AccountScreen = ({ navigation }) => {
   const [name, setName] = React.useState();
   const [uid, setUID] = React.useState();
   const [user, setUser] = React.useState();
-  // TODO: reset password
 
   React.useEffect(() => {
     const getSecureStorage = async () => {

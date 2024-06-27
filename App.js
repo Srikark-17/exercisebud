@@ -241,7 +241,6 @@ export default function App2() {
   );
 
   React.useEffect(() => {
-    // Fetch the token from storage then navigate to our appropriate place
     const bootstrapAsync = async () => {
       let userToken;
 
@@ -251,8 +250,6 @@ export default function App2() {
         console.log(e);
       }
 
-      // This will switch to the App screen or Auth screen and this loading
-      // screen will be unmounted and thrown away.
       dispatch({ type: "RESTORE_TOKEN", token: userToken });
     };
 
