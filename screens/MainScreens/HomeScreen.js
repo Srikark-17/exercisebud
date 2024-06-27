@@ -78,6 +78,98 @@ const HomeScreen = () => {
 
     retrieveNotifications();
 
+    useEffect(() => {
+      if (!hasPermissions) {
+        return;
+      }
+  
+      // Query Health data
+      const options = {
+        date: new Date().toISOString(),
+      };
+  
+      AppleHealthKit.getStepCount(options, (err, results) => {
+        if (err) {
+          console.log('Error getting the steps');
+          return;
+        }
+        setSteps(results.value);
+      });
+  
+      AppleHealthKit.getFlightsClimbed(options, (err, results) => {
+        if (err) {
+          console.log('Error getting the Flights Climbed:', err);
+          return;
+        }
+        setFlights(results.value);
+      });
+  
+      AppleHealthKit.getDistanceWalkingRunning(options, (err, results) => {
+        if (err) {
+          console.log('Error getting the Distance:', err);
+          return;
+        }
+        setDistance(results.value);
+      });
+    }, [hasPermissions, setSteps, setFlights, setDistance]);
+    
+    const postStepsToDatabase = async (stepsData) => {
+      const apiKey = 'bu0vFJtWdhjfvMo6Pc7JcSMUhM7gMTydozsFORUm8TglQhOxOoA4HwqVhvczt5Wd';
+      const url = 'https://us-east-2.aws.data.mongodb-api.com/app/data-dvjag/endpoint/data/v1/action/findOne';
+  
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'api-key': apiKey
+          },
+          body: JSON.stringify({
+            database: 'your_database_name', // Replace with your actual database name
+            collection: 'your_collection_name', // Replace with your actual collection name
+            document: {
+              steps: stepsData,
+              date: new Date().toISOString()
+            }
+          })
+        });
+  
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+  
+        const result = await response.json();
+        console.log('Data posted successfully:', result);
+      } catch (error) {
+        console.error('Error posting data:', error);
+      }
+    };
+  
+    useEffect(() => {
+      if (!hasPermissions) {
+        return;
+      }
+  
+      const options = {
+        date: new Date().toISOString(),
+      };
+  
+      AppleHealthKit.getStepCount(options, (err, results) => {
+        if (err) {
+          console.log('Error getting the steps');
+          return;
+        }
+        setSteps(results.value);
+        postStepsToDatabase(results.value);  // Post steps to database
+      });
+  
+      // ... (other health data fetching code)
+  
+    }, [hasPermissions, setSteps, setFlights, setDistance]);
+  
+ 
+
+  
     const retrieveData = async () => {
       const response = await fetch(
         `https://us-east-2.aws.data.mongodb-api.com/app/data-dvjag/endpoint/data/v1/action/findOne`,
