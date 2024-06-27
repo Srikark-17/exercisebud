@@ -45,10 +45,6 @@ const PersonalizedList = ({ navigation }) => {
     return daysDiff <= 7;
   }
 
-  const openai = new OpenAI({
-    apiKey: API_KEY,
-  });
-
   useEffect(() => {
     const getSecureStorage = async () => {
       const storedName = await SecureStore.getItemAsync("name");
