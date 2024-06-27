@@ -125,8 +125,8 @@ const HomeScreen = () => {
             'api-key': apiKey
           },
           body: JSON.stringify({
-            database: 'your_database_name', // Replace with your actual database name
-            collection: 'your_collection_name', // Replace with your actual collection name
+            database: 'xbud', // Replace with your actual database name
+            collection: 'users', // Replace with your actual collection name
             document: {
               steps: stepsData,
               date: new Date().toISOString()
