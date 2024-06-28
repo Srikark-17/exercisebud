@@ -10,6 +10,7 @@ import {
 import React, { useEffect } from "react";
 import * as SecureStore from "expo-secure-store";
 import { HP, WP } from "../../../config/responsive";
+import Markdown from "react-native-markdown-display";
 import DropdownComponent from "../../../components/Dropdown";
 
 const PersonalizedList = ({ navigation }) => {
@@ -19,7 +20,7 @@ const PersonalizedList = ({ navigation }) => {
   const [exerciseIntensity, setExerciseIntensity] = React.useState();
   const [purpose, setPurpose] = React.useState("");
   const [accessToEquipment, setAccessToEquipment] = React.useState("");
-  const [step, setStep] = React.useState(1);
+  const [step, setStep] = React.useState(0);
   const [name, setName] = React.useState("");
   const [currentUser, setCurrentUser] = React.useState(null);
   const [recommendation, setRecommendation] = React.useState(null);
@@ -341,7 +342,13 @@ const PersonalizedList = ({ navigation }) => {
       ) : (
         <>
           <Text style={styles.title}>Recommendations</Text>
-          {/* TODO: add recommendations */}
+          <Markdown
+            style={{
+              body: { color: "black" },
+            }}
+          >
+            {recommendation}
+          </Markdown>
           <TouchableOpacity
             activeOpacity={1}
             onPress={() => navigation.navigate("Meditation")}

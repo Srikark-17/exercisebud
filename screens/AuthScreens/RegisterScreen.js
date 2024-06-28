@@ -18,8 +18,6 @@ function RegisterScreen({ navigation }) {
   const [fullName, setFullName] = useState();
   const { signUp } = React.useContext(AuthContext);
 
-  // TODO: implement username already taken
-
   const handleSubmit = async () => {
     const myHeaders = new Headers();
     myHeaders.append(
