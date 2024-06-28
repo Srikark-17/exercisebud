@@ -27,7 +27,7 @@ const WebV = () => {
         );
       })
       .catch((error) => console.error(error));
-  }, []); // Empty dependency array ensures random selection occurs only once
+  }, []);
 
   return (
     <WebView
