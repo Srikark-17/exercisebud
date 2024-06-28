@@ -6,6 +6,7 @@ import {
   StatusBar,
   TouchableOpacity,
   Platform,
+  LogBox,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
@@ -40,6 +41,8 @@ const HomeScreen = () => {
   const { Permissions } = AppleHealthKit.Constants;
   const [androidPermissions, setAndroidPermissions] = useState([]);
 
+  LogBox.ignoreAllLogs();
+
   React.useEffect(() => {
     const getSecureStorage = async () => {
       const storedName = await SecureStore.getItemAsync("name");
@@ -47,8 +50,6 @@ const HomeScreen = () => {
     };
 
     getSecureStorage();
-
-    // ... other code
 
     if (Platform.OS === "ios") {
       const permissions = {
@@ -67,13 +68,11 @@ const HomeScreen = () => {
       });
     } else {
       const init = async () => {
-        // initialize the client
         const isInitialized = await initialize();
         if (!isInitialized) {
           console.log("Failed to initialize Health Connect");
           return;
         }
-        // request permissions
         const grantedPermissions = await requestPermission([
           { accessType: "read", recordType: "Steps" },
         ]);

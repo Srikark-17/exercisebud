@@ -12,7 +12,6 @@ import { HP, WP } from "../../../config/responsive";
 
 const ANIMATION_DURATION = 4000;
 const ANIMATION_ROTATION_DURATION = 8000;
-// TODO: fix white bar
 
 const Meditation = ({ navigation }) => {
   const [animationValue] = useState(new Animated.Value(0));

@@ -96,12 +96,10 @@ const AddFriendScreen = ({ navigation }) => {
 
         if (result.documents) {
           let filteredFriends = result.documents.filter((user) => {
-            // Remove current user
             if (currentUser && user._id === currentUser._id) {
               return false;
             }
 
-            // Remove current user's friends
             if (
               currentUser &&
               currentUser.friends &&
