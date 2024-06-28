@@ -341,7 +341,6 @@ export default function App2() {
 
     appState.current = nextAppState;
     setAppStateVisible(appState.current);
-    console.log("AppState", appState.current);
   };
 
   return (

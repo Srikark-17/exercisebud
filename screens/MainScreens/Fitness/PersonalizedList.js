@@ -19,7 +19,7 @@ const PersonalizedList = ({ navigation }) => {
   const [exerciseIntensity, setExerciseIntensity] = React.useState();
   const [purpose, setPurpose] = React.useState("");
   const [accessToEquipment, setAccessToEquipment] = React.useState("");
-  const [step, setStep] = React.useState(0);
+  const [step, setStep] = React.useState(1);
   const [name, setName] = React.useState("");
   const [currentUser, setCurrentUser] = React.useState(null);
   const [recommendation, setRecommendation] = React.useState(null);
@@ -342,7 +342,16 @@ const PersonalizedList = ({ navigation }) => {
         <>
           <Text style={styles.title}>Recommendations</Text>
           {/* TODO: add recommendations */}
-          {/* TODO: add meditation button */}
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => navigation.navigate("Meditation")}
+          >
+            <View style={styles.generateRecommendationsButton}>
+              <Text style={styles.generateRecommendationsButtonText}>
+                Mindful Breathing Yoga
+              </Text>
+            </View>
+          </TouchableOpacity>
         </>
       )}
     </View>

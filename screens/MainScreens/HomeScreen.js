@@ -5,15 +5,19 @@ import {
   View,
   StatusBar,
   TouchableOpacity,
+  Platform,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import { HP, WP } from "../../config/responsive";
 import { Fontisto } from "@expo/vector-icons";
 import WebV from "../../components/WebView";
-import { useState, useEffect } from 'react';
-import { Platform } from 'react-native';
-import { initialize, requestPermission, readRecords } from 'react-native-health-connect';
+import {
+  initialize,
+  requestPermission,
+  readRecords,
+} from "react-native-health-connect";
+import AppleHealthKit from "react-native-health";
 
 const motivations = [
   "\"The only one who can tell you “you can't win” is you and you don't have to listen.\"",
@@ -32,6 +36,9 @@ const HomeScreen = () => {
   const motivation = React.useState(
     motivations[parseInt(Math.round(Math.random() * 5))]
   );
+  const [hasPermissions, setHasPermission] = React.useState(false);
+  const { Permissions } = AppleHealthKit.Constants;
+  const [androidPermissions, setAndroidPermissions] = useState([]);
 
   React.useEffect(() => {
     const getSecureStorage = async () => {
@@ -41,63 +48,40 @@ const HomeScreen = () => {
 
     getSecureStorage();
 
-    
-    const useHealthData = () => {
-      // ... other code
-      const [androidPermissions, setAndroidPermissions] = useState([]);
-      const [steps, setSteps] = useState(0);
-    
-      useEffect(() => {
-        if (Platform.OS !== 'android') {
-          return;
-        }
-        const init = async () => {
-          // initialize the client
-          const isInitialized = await initialize();
-          if (!isInitialized) {
-            console.log('Failed to initialize Health Connect');
-            return;
-          }
-          // request permissions
-          const grantedPermissions = await requestPermission([
-            { accessType: 'read', recordType: 'Steps' },
-            { accessType: 'read', recordType: 'Distance' },
-            { accessType: 'read', recordType: 'FloorsClimbed' },
-          ]);
-          setAndroidPermissions(grantedPermissions);
-        };
-        init();
-      }, []);
-    
-      const hasAndroidPermission = (recordType) => {
-        return androidPermissions.some((perm) => perm.recordType === recordType);
+    // ... other code
+
+    if (Platform.OS === "ios") {
+      const permissions = {
+        permissions: {
+          read: [Permissions.Steps],
+          write: [],
+        },
       };
-    
-      useEffect(() => {
-        if (!hasAndroidPermission('Steps')) {
+
+      AppleHealthKit.initHealthKit(permissions, (err) => {
+        if (err) {
+          console.log("Error getting permissions");
           return;
         }
-        const getHealthData = async () => {
-          const today = new Date();
-          const timeRangeFilter = {
-            operator: 'between',
-            startTime: new Date(today.getTime() - 86400000).toISOString(),
-            endTime: today.toISOString(),
-          };
-          // Steps
-          const steps = await readRecords('Steps', { timeRangeFilter });
-          const totalSteps = steps.reduce((sum, cur) => sum + cur.count, 0);
-          setSteps(totalSteps);
-        };
-        getHealthData();
-      }, [androidPermissions]);
-    
-      // ... other code
-    
-      return { steps }; // Return any values you want to expose from this hook
-    };
-    
-    
+        setHasPermission(true);
+      });
+    } else {
+      const init = async () => {
+        // initialize the client
+        const isInitialized = await initialize();
+        if (!isInitialized) {
+          console.log("Failed to initialize Health Connect");
+          return;
+        }
+        // request permissions
+        const grantedPermissions = await requestPermission([
+          { accessType: "read", recordType: "Steps" },
+        ]);
+        setAndroidPermissions(grantedPermissions);
+      };
+      init();
+    }
+
     const retrieveNotifications = async () => {
       const myHeaders = new Headers();
       myHeaders.append(
@@ -138,98 +122,6 @@ const HomeScreen = () => {
 
     retrieveNotifications();
 
-    useEffect(() => {
-      if (!hasPermissions) {
-        return;
-      }
-  
-      // Query Health data
-      const options = {
-        date: new Date().toISOString(),
-      };
-  
-      AppleHealthKit.getStepCount(options, (err, results) => {
-        if (err) {
-          console.log('Error getting the steps');
-          return;
-        }
-        setSteps(results.value);
-      });
-  
-      AppleHealthKit.getFlightsClimbed(options, (err, results) => {
-        if (err) {
-          console.log('Error getting the Flights Climbed:', err);
-          return;
-        }
-        setFlights(results.value);
-      });
-  
-      AppleHealthKit.getDistanceWalkingRunning(options, (err, results) => {
-        if (err) {
-          console.log('Error getting the Distance:', err);
-          return;
-        }
-        setDistance(results.value);
-      });
-    }, [hasPermissions, setSteps, setFlights, setDistance]);
-    
-    const postStepsToDatabase = async (stepsData) => {
-      const apiKey = 'bu0vFJtWdhjfvMo6Pc7JcSMUhM7gMTydozsFORUm8TglQhOxOoA4HwqVhvczt5Wd';
-      const url = 'https://us-east-2.aws.data.mongodb-api.com/app/data-dvjag/endpoint/data/v1/action/findOne';
-  
-      try {
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'api-key': apiKey
-          },
-          body: JSON.stringify({
-            database: 'xbud', // Replace with your actual database name
-            collection: 'users', // Replace with your actual collection name
-            document: {
-              steps: stepsData,
-              date: new Date().toISOString()
-            }
-          })
-        });
-  
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-  
-        const result = await response.json();
-        console.log('Data posted successfully:', result);
-      } catch (error) {
-        console.error('Error posting data:', error);
-      }
-    };
-  
-    useEffect(() => {
-      if (!hasPermissions) {
-        return;
-      }
-  
-      const options = {
-        date: new Date().toISOString(),
-      };
-  
-      AppleHealthKit.getStepCount(options, (err, results) => {
-        if (err) {
-          console.log('Error getting the steps');
-          return;
-        }
-        setSteps(results.value);
-        postStepsToDatabase(results.value);  // Post steps to database
-      });
-  
-      // ... (other health data fetching code)
-  
-    }, [hasPermissions, setSteps, setFlights, setDistance]);
-  
- 
-
-  
     const retrieveData = async () => {
       const response = await fetch(
         `https://us-east-2.aws.data.mongodb-api.com/app/data-dvjag/endpoint/data/v1/action/findOne`,
@@ -351,6 +243,163 @@ const HomeScreen = () => {
     }
   };
 
+  const postStepsToDatabase = async (stepsData) => {
+    const apiKey =
+      "bu0vFJtWdhjfvMo6Pc7JcSMUhM7gMTydozsFORUm8TglQhOxOoA4HwqVhvczt5Wd";
+    const url =
+      "https://us-east-2.aws.data.mongodb-api.com/app/data-dvjag/endpoint/data/v1/action/updateOne";
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "api-key": apiKey,
+        },
+        body: JSON.stringify({
+          dataSource: "Cluster0",
+          database: "xbud",
+          collection: "users",
+          filter: { name: name },
+          update: {
+            $set: {
+              stepStats: stepsData,
+            },
+          },
+          upsert: true,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${JSON.stringify(response)}`);
+      }
+
+      setStepStats(stepsData);
+    } catch (error) {
+      console.error("Error posting data:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (Platform.OS !== "ios" || !hasPermissions) {
+      return;
+    }
+
+    const now = new Date();
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const monthAgo = new Date(
+      now.getFullYear(),
+      now.getMonth() - 1,
+      now.getDate()
+    );
+    const yearAgo = new Date(
+      now.getFullYear() - 1,
+      now.getMonth(),
+      now.getDate()
+    );
+
+    const getStepsForPeriod = async (startDate, periodName) => {
+      const options = {
+        startDate: startDate.toISOString(),
+        endDate: now.toISOString(),
+      };
+
+      return new Promise((resolve, reject) => {
+        AppleHealthKit.getStepCount(options, (err, results) => {
+          if (err) {
+            console.log(`Error getting the steps for ${periodName}`);
+            reject(err);
+          } else {
+            resolve(results.value);
+          }
+        });
+      });
+    };
+
+    const fetchAllSteps = async () => {
+      try {
+        const weeklySteps = await getStepsForPeriod(weekAgo, "week");
+        const monthlySteps = await getStepsForPeriod(monthAgo, "month");
+        const yearlySteps = await getStepsForPeriod(yearAgo, "year");
+
+        const stepsData = {
+          weekly: Math.floor(weeklySteps / 7.0),
+          monthly: Math.floor(monthlySteps / 30.0),
+          yearly: Math.floor(yearlySteps / 365.0),
+        };
+
+        postStepsToDatabase(stepsData);
+      } catch (error) {
+        console.error("Error fetching steps:", error);
+      }
+    };
+
+    fetchAllSteps();
+  }, [hasPermissions]);
+
+  const hasAndroidPermission = (recordType) => {
+    return androidPermissions.some((perm) => perm.recordType === recordType);
+  };
+
+  useEffect(() => {
+    if (!hasAndroidPermission("Steps") || Platform.OS !== "android") {
+      return;
+    }
+
+    const getHealthData = async () => {
+      const now = new Date();
+      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const monthAgo = new Date(
+        now.getFullYear(),
+        now.getMonth() - 1,
+        now.getDate()
+      );
+      const yearAgo = new Date(
+        now.getFullYear() - 1,
+        now.getMonth(),
+        now.getDate()
+      );
+
+      const getStepsForPeriod = async (startDate, endDate, periodName) => {
+        const timeRangeFilter = {
+          operator: "between",
+          startTime: startDate.toISOString(),
+          endTime: endDate.toISOString(),
+        };
+
+        try {
+          const steps = await readRecords("Steps", { timeRangeFilter });
+          const totalSteps = steps.reduce((sum, cur) => sum + cur.count, 0);
+          console.log(`${periodName.toUpperCase()} STEPS >>> ${totalSteps}`);
+          return totalSteps;
+        } catch (error) {
+          console.error(`Error getting steps for ${periodName}:`, error);
+          return 0;
+        }
+      };
+
+      try {
+        const weeklySteps = await getStepsForPeriod(weekAgo, now, "week");
+        const monthlySteps = await getStepsForPeriod(monthAgo, now, "month");
+        const yearlySteps = await getStepsForPeriod(yearAgo, now, "year");
+
+        const stepsData = {
+          weekly: weeklySteps,
+          monthly: monthlySteps,
+          yearly: yearlySteps,
+        };
+
+        console.log("Steps Data:", stepsData);
+        setStepStats(stepsData);
+        postStepsToDatabase(stepsData);
+      } catch (error) {
+        console.error("Error fetching steps:", error);
+      }
+    };
+
+    getHealthData();
+  }, [androidPermissions]);
+
   return (
     <ScrollView style={{ backgroundColor: "#fff" }}>
       <StatusBar barStyle="dark-content" />
@@ -412,21 +461,29 @@ const HomeScreen = () => {
         </View>
       </View>
       <WebV />
-      <Text style={styles.stepsTitle}>Step Stats</Text>
-      <View style={styles.stepsContainer}>
-        <View style={styles.stepsRow}>
-          <Text style={styles.stepsText}>Week</Text>
-          <Text style={styles.stepsText}>{stepStats?.weekly} steps/day</Text>
-        </View>
-        <View style={styles.stepsRow}>
-          <Text style={styles.stepsText}>Month</Text>
-          <Text style={styles.stepsText}>{stepStats?.monthly} steps/day</Text>
-        </View>
-        <View style={styles.stepsRow}>
-          <Text style={styles.stepsText}>Year</Text>
-          <Text style={styles.stepsText}>{stepStats?.yearly} steps/day</Text>
-        </View>
-      </View>
+      {stepStats ? (
+        <>
+          <Text style={styles.stepsTitle}>Step Stats</Text>
+          <View style={styles.stepsContainer}>
+            <View style={styles.stepsRow}>
+              <Text style={styles.stepsText}>Week</Text>
+              <Text style={styles.stepsText}>{stepStats.weekly} steps/day</Text>
+            </View>
+            <View style={styles.stepsRow}>
+              <Text style={styles.stepsText}>Month</Text>
+              <Text style={styles.stepsText}>
+                {stepStats.monthly} steps/day
+              </Text>
+            </View>
+            <View style={styles.stepsRow}>
+              <Text style={styles.stepsText}>Year</Text>
+              <Text style={styles.stepsText}>{stepStats.yearly} steps/day</Text>
+            </View>
+          </View>
+        </>
+      ) : (
+        <></>
+      )}
     </ScrollView>
   );
 };

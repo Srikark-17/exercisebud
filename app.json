@@ -42,7 +42,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.exercisebud.exercisebud"
     },
     "android": {
       "adaptiveIcon": {

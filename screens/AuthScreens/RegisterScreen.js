@@ -18,6 +18,8 @@ function RegisterScreen({ navigation }) {
   const [fullName, setFullName] = useState();
   const { signUp } = React.useContext(AuthContext);
 
+  // TODO: implement username already taken
+
   const handleSubmit = async () => {
     const response = await fetch(
       `https://us-east-2.aws.data.mongodb-api.com/app/data-dvjag/endpoint/data/v1/action/insertOne`,

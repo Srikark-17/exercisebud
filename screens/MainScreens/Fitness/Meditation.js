@@ -12,6 +12,7 @@ import { HP, WP } from "../../../config/responsive";
 
 const ANIMATION_DURATION = 4000;
 const ANIMATION_ROTATION_DURATION = 8000;
+// TODO: fix white bar
 
 const Meditation = ({ navigation }) => {
   const [animationValue] = useState(new Animated.Value(0));
@@ -105,12 +106,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   image: {
-    width: WP(40),
+    width: WP(53),
     height: HP(25),
   },
   textOverlay: {
     position: "absolute",
-    width: WP(52),
+    width: WP(64),
     height: HP(33),
     backgroundColor: "rgba(0, 0, 0, 0.85)",
     justifyContent: "center",
